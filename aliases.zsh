@@ -45,11 +45,15 @@ alias glog="git log --oneline --graph --decorate"
 alias glast="git log -1 HEAD --stat"
 
 # Git open file functions
-# Open nth modified file (zero-indexed, defaults to 0)
+# Open nth modified file (zero-indexed, defaults to 0, clamps to last file)
 gom() {
   local root=$(git rev-parse --show-toplevel)
-  local file=$(git diff HEAD --name-only | sed -n "$((${1:-0}+1))p")
-  [[ -n "$file" ]] && cursor "$root/$file" || echo "No file at index ${1:-0}"
+  local files=(${(f)"$(git diff HEAD --name-only)"})
+  local count=${#files[@]}
+  [[ $count -eq 0 || -z "${files[1]}" ]] && echo "No modified files" && return
+  local idx=$((${1:-0} + 1))
+  (( idx > count )) && idx=$count
+  cursor "$root/${files[$idx]}"
 }
 
 # Open all modified files
@@ -59,11 +63,15 @@ goma() {
   [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]/#/$root/}" || echo "No modified files"
 }
 
-# Open nth staged file (zero-indexed, defaults to 0)
+# Open nth staged file (zero-indexed, defaults to 0, clamps to last file)
 gos() {
   local root=$(git rev-parse --show-toplevel)
-  local file=$(git diff --cached --name-only | sed -n "$((${1:-0}+1))p")
-  [[ -n "$file" ]] && cursor "$root/$file" || echo "No staged file at index ${1:-0}"
+  local files=(${(f)"$(git diff --cached --name-only)"})
+  local count=${#files[@]}
+  [[ $count -eq 0 || -z "${files[1]}" ]] && echo "No staged files" && return
+  local idx=$((${1:-0} + 1))
+  (( idx > count )) && idx=$count
+  cursor "$root/${files[$idx]}"
 }
 
 # Open all staged files
@@ -73,11 +81,15 @@ gosa() {
   [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]/#/$root/}" || echo "No staged files"
 }
 
-# Open nth unstaged file (zero-indexed, defaults to 0)
+# Open nth unstaged file (zero-indexed, defaults to 0, clamps to last file)
 gou() {
   local root=$(git rev-parse --show-toplevel)
-  local file=$(git diff --name-only | sed -n "$((${1:-0}+1))p")
-  [[ -n "$file" ]] && cursor "$root/$file" || echo "No unstaged file at index ${1:-0}"
+  local files=(${(f)"$(git diff --name-only)"})
+  local count=${#files[@]}
+  [[ $count -eq 0 || -z "${files[1]}" ]] && echo "No unstaged files" && return
+  local idx=$((${1:-0} + 1))
+  (( idx > count )) && idx=$count
+  cursor "$root/${files[$idx]}"
 }
 
 # Open all unstaged files
