@@ -107,6 +107,7 @@ goc() {
 }
 
 # Dev aliases
+alias d="dev"
 alias dcd="dev cd"
 alias dcds="dev cd shopify"
 dcdr() {
