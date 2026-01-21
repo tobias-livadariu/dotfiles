@@ -45,51 +45,61 @@ alias glog="git log --oneline --graph --decorate"
 alias glast="git log -1 HEAD --stat"
 
 # Git open file functions
-# Open nth modified file (zero-indexed, all changed files compared to HEAD)
+# Open nth modified file (zero-indexed, defaults to 0)
 gom() {
+  local root=$(git rev-parse --show-toplevel)
   local file=$(git diff HEAD --name-only | sed -n "$((${1:-0}+1))p")
-  [[ -n "$file" ]] && cursor "$file" || echo "No file at index $1"
+  [[ -n "$file" ]] && cursor "$root/$file" || echo "No file at index ${1:-0}"
 }
 
 # Open all modified files
 goma() {
+  local root=$(git rev-parse --show-toplevel)
   local files=(${(f)"$(git diff HEAD --name-only)"})
-  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]}" || echo "No modified files"
+  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]/#/$root/}" || echo "No modified files"
 }
 
-# Open nth staged file (zero-indexed)
+# Open nth staged file (zero-indexed, defaults to 0)
 gos() {
+  local root=$(git rev-parse --show-toplevel)
   local file=$(git diff --cached --name-only | sed -n "$((${1:-0}+1))p")
-  [[ -n "$file" ]] && cursor "$file" || echo "No staged file at index $1"
+  [[ -n "$file" ]] && cursor "$root/$file" || echo "No staged file at index ${1:-0}"
 }
 
 # Open all staged files
 gosa() {
+  local root=$(git rev-parse --show-toplevel)
   local files=(${(f)"$(git diff --cached --name-only)"})
-  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]}" || echo "No staged files"
+  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]/#/$root/}" || echo "No staged files"
 }
 
-# Open nth unstaged file (zero-indexed)
+# Open nth unstaged file (zero-indexed, defaults to 0)
 gou() {
+  local root=$(git rev-parse --show-toplevel)
   local file=$(git diff --name-only | sed -n "$((${1:-0}+1))p")
-  [[ -n "$file" ]] && cursor "$file" || echo "No unstaged file at index $1"
+  [[ -n "$file" ]] && cursor "$root/$file" || echo "No unstaged file at index ${1:-0}"
 }
 
 # Open all unstaged files
 goua() {
+  local root=$(git rev-parse --show-toplevel)
   local files=(${(f)"$(git diff --name-only)"})
-  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]}" || echo "No unstaged files"
+  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]/#/$root/}" || echo "No unstaged files"
 }
 
 # Open all changed files (staged + unstaged) in cursor
 goc() {
+  local root=$(git rev-parse --show-toplevel)
   local files=(${(f)"$(git diff HEAD --name-only)"})
-  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]}" || echo "No changed files"
+  [[ ${#files[@]} -gt 0 && -n "${files[1]}" ]] && cursor "${files[@]/#/$root/}" || echo "No changed files"
 }
 
 # Dev aliases
 alias dcd="dev cd"
 alias dcds="dev cd shopify"
+dcdr() {
+  cd ~/repos/${1:+$1}
+}
 alias dt="dev test"
 alias du="dev up"
 alias dd="dev down"
