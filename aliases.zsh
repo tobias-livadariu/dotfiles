@@ -7,7 +7,7 @@ alias gs="git status"
 alias ga="git add"
 alias gaa="git add --all"
 alias gc="git commit"
-alias gcm="git commit -m"
+alias gcmsg="git commit -m"
 alias gdf="git diff"
 alias grstr="git restore"
 alias grstrs="git restore --staged"
@@ -34,13 +34,39 @@ alias gcom="git checkout main"
 
 # Stashing
 alias gst="git stash push -m"
-alias gsta="git stash apply"
 alias gstl="git stash list"
 alias gstdrop="git stash drop"
 alias gstpop="git stash pop"
 
+# Apply nth stash (zero-indexed, defaults to 0, clamps to last stash)
+gstap() {
+  local count=$(git stash list | wc -l | tr -d ' ')
+  [[ $count -eq 0 ]] && echo "No stashes" && return
+  local idx=${1:-0}
+  (( idx >= count )) && idx=$((count - 1))
+  git stash apply "stash@{$idx}"
+}
+
+# View nth stash summary (zero-indexed, defaults to 0, clamps to last stash)
+gstv() {
+  local count=$(git stash list | wc -l | tr -d ' ')
+  [[ $count -eq 0 ]] && echo "No stashes" && return
+  local idx=${1:-0}
+  (( idx >= count )) && idx=$((count - 1))
+  git stash show "stash@{$idx}"
+}
+
+# View nth stash patch/diff (zero-indexed, defaults to 0, clamps to last stash)
+gstvp() {
+  local count=$(git stash list | wc -l | tr -d ' ')
+  [[ $count -eq 0 ]] && echo "No stashes" && return
+  local idx=${1:-0}
+  (( idx >= count )) && idx=$((count - 1))
+  git stash show -p "stash@{$idx}"
+}
+
 # Log viewing
-alias gl="git log"
+alias glo="git log"
 alias glog="git log --oneline --graph --decorate"
 alias glast="git log -1 HEAD --stat"
 
@@ -110,7 +136,7 @@ goc() {
 alias d="dev"
 alias dcd="dev cd"
 alias dcds="dev cd shopify"
-dcdr() {
+cdr() {
   cd ~/repos/${1:+$1}
 }
 alias dt="dev test"
@@ -138,3 +164,67 @@ alias aliases="cursor ~/repos/dotfiles/aliases.zsh"
 
 # To apply new aliases, run:
 # source ~/repos/dotfiles/aliases.zsh
+
+# =============================================================================
+# Oh-My-Zsh Git Plugin Aliases Reference (plugins=(git))
+# These are defined by oh-my-zsh - listed here to avoid naming collisions
+# =============================================================================
+# g       = git
+# ga      = git add
+# gaa     = git add --all
+# gam     = git am
+# gb      = git branch
+# gba     = git branch -a
+# gbd     = git branch -d
+# gbD     = git branch -D
+# gbl     = git blame -b -w
+# gbr     = git branch --remote
+# gbs     = git bisect
+# gc      = git commit -v
+# gc!     = git commit -v --amend
+# gca     = git commit -v -a
+# gcam    = git commit -a -m
+# gcb     = git checkout -b
+# gcd     = git checkout develop
+# gcf     = git config --list
+# gcl     = git clone --recurse-submodules
+# gcm     = git checkout $(git_main_branch)  # NOTE: We use gcmsg for "git commit -m"
+# gco     = git checkout
+# gcp     = git cherry-pick
+# gd      = git diff
+# gds     = git diff --staged
+# gf      = git fetch
+# gfo     = git fetch origin
+# gg      = git gui citool
+# gl      = git pull  # NOTE: We use glo for "git log"
+# glg     = git log --stat
+# glog    = git log --oneline --decorate --graph
+# gloga   = git log --oneline --decorate --graph --all
+# gm      = git merge
+# gp      = git push
+# gpd     = git push --dry-run
+# gpf     = git push --force-with-lease
+# gpr     = git pull --rebase
+# gpush   = git push origin $(current_branch)
+# gr      = git remote
+# grb     = git rebase
+# grbi    = git rebase -i
+# grhh    = git reset --hard
+# grs     = git restore
+# grss    = git restore --source
+# grst    = git restore --staged
+# grt     = cd "$(git rev-parse --show-toplevel || echo .)"
+# gsh     = git show
+# gss     = git status -s
+# gst     = git status  # NOTE: We use gst for "git stash push -m"
+# gsta    = git stash apply  # NOTE: We use gstap (with index support)
+# gstd    = git stash drop  # NOTE: We use gstdrop
+# gstl    = git stash list
+# gstp    = git stash pop
+# gsts    = git stash show --text  # NOTE: We use gstv/gstvp (with index support)
+# gsu     = git submodule update
+# gsw     = git switch
+# gswc    = git switch -c
+# gts     = git tag -s
+# gunwip  = git log -n 1 | grep -q -c "--wip--" && git reset HEAD~1
+# gwip    = git add -A; git rm $(git ls-files --deleted) 2>/dev/null; git commit --no-verify -m "--wip--"
