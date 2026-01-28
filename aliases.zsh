@@ -9,9 +9,10 @@ alias gaa="git add --all"
 alias gc="git commit"
 alias gcmsg="git commit -m"
 alias gd="git diff"
-alias grs="git restore"
-alias grss="git restore --staged"
-alias gf="git fetch"
+# grs     = git restore
+# grss    = git restore --source
+# grst    = git restore --staged
+# alias gf="git fetch"
 alias gpull="git pull"
 alias gpush="git push"
 alias gcl="git clone"
@@ -33,7 +34,8 @@ alias gcob="git checkout -b"
 alias gcom="git checkout main"
 
 # Stashing
-alias gst="git stash push -m"
+alias gstp="git stash push -m"
+alias gstpu="git stash push -u -m"
 alias gstl="git stash list"
 alias gstdrop="git stash drop"
 alias gstpop="git stash pop"
@@ -136,6 +138,9 @@ goc() {
 alias d="dev"
 alias dcd="dev cd"
 alias dcds="dev cd shopify"
+alias dcdaw="dev cd admin-web"
+alias dcdmae="dev cd merchant-analytics-etl"
+alias dcdmaa="dev cd merchant-analytics-api"
 cdr() {
   cd ~/repos/${1:+$1}
 }
@@ -147,6 +152,11 @@ alias dop="dev open"
 alias doa="dev open app"
 alias doi="dev open internal"
 alias dog="dev open graphiql"
+alias dco="dev console"
+
+# Admin-web aliases
+alias dpv="dev prod vite"
+alias clearViteCache="rm -rf build/cache/vite"
 
 # Devx aliases
 alias dx="devx"
@@ -161,9 +171,11 @@ alias pg="DB_ADAPTER=postgresql"
 alias zshrc="cursor ~/.zshrc"
 alias gitconfig="cursor ~/.gitconfig"
 alias aliases="cursor ~/repos/dotfiles/aliases.zsh"
+alias va="less ~/repos/dotfiles/aliases.zsh"
 
 # To apply new aliases, run:
 # source ~/repos/dotfiles/aliases.zsh
+alias re="source ~/repos/dotfiles/aliases.zsh"
 
 # =============================================================================
 # Oh-My-Zsh Git Plugin Aliases Reference (plugins=(git))
