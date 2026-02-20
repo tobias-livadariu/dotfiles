@@ -4,7 +4,7 @@
 # Git aliases
 alias g="git"
 alias gs="git status"
-alias ga="git add"
+# alias ga="git add"
 alias gaa="git add --all"
 alias gc="git commit"
 alias gcmsg="git commit -m"
@@ -32,6 +32,10 @@ alias gb="git branch"
 alias gco="git checkout"
 alias gcob="git checkout -b"
 alias gcom="git checkout main"
+gob() {
+  [[ -z "$1" ]] && echo "Usage: gob <branch>" && return 1
+  git fetch origin "$1" && git checkout "$1"
+}
 
 # Stashing
 alias gstp="git stash push -m"
@@ -39,6 +43,26 @@ alias gstpu="git stash push -u -m"
 alias gstl="git stash list"
 alias gstdrop="git stash drop"
 alias gstpop="git stash pop"
+
+# Stash push with message, then apply nth stash (defaults to 0, clamps to last stash)
+gstpa() {
+  [[ -z "$1" ]] && echo "Usage: gstpa \"message\" [stash-index]" && return 1
+  git stash push -m "$1" || return 1
+  local count=$(git stash list | wc -l | tr -d ' ')
+  local idx=${2:-0}
+  (( idx >= count )) && idx=$((count - 1))
+  git stash apply "stash@{$idx}"
+}
+
+# Stash push -u with message, then apply nth stash (defaults to 0, clamps to last stash)
+gstpua() {
+  [[ -z "$1" ]] && echo "Usage: gstpua \"message\" [stash-index]" && return 1
+  git stash push -u -m "$1" || return 1
+  local count=$(git stash list | wc -l | tr -d ' ')
+  local idx=${2:-0}
+  (( idx >= count )) && idx=$((count - 1))
+  git stash apply "stash@{$idx}"
+}
 
 # Apply nth stash (zero-indexed, defaults to 0, clamps to last stash)
 gstap() {
@@ -137,14 +161,26 @@ goc() {
 # Dev aliases
 alias d="dev"
 alias dcd="dev cd"
+alias dcd="dev cd //"
 alias dcds="dev cd shopify"
+alias dcda="dev cd marketing-attribution"
 alias dcdaw="dev cd admin-web"
 alias dcdmae="dev cd merchant-analytics-etl"
 alias dcdmaa="dev cd merchant-analytics-api"
 cdr() {
   cd ~/repos/${1:+$1}
 }
+alias cdss="cd ~/repos/scatter-scout"
+sscout() {
+  (
+    unset GEM_HOME GEM_PATH GEM_ROOT
+    chruby 3.4.8
+    cd ~/repos/scatter-scout
+    bundle exec ruby bin/sscout "$@"
+  )
+}
 alias dt="dev test"
+alias dtc="dev test --changedSince=main"
 alias du="dev up"
 alias dd="dev down"
 alias ds="dev server"
@@ -162,6 +198,16 @@ alias clearViteCache="rm -rf build/cache/vite"
 alias dx="devx"
 alias cc="devx claude"
 
+# Podman aliases
+alias p="podman"
+alias pm="podman machine"
+alias pms="podman machine start"
+alias pmst="podman machine stop"
+alias pml="podman machine list"
+alias pmr="podman machine restart"
+alias pmrm="podman machine rm"
+alias pmrmf="podman machine rm --force"
+
 # Important misc aliases
 alias c="clear"
 alias cr="cursor"
@@ -172,6 +218,10 @@ alias zshrc="cursor ~/.zshrc"
 alias gitconfig="cursor ~/.gitconfig"
 alias aliases="cursor ~/repos/dotfiles/aliases.zsh"
 alias va="less ~/repos/dotfiles/aliases.zsh"
+
+# More arbitrary aliases for specific use cases
+alias depst="npm run build && quick deploy dist stickify"
+alias tdepst="npm run build && quick deploy dist stickify-test"
 
 # To apply new aliases, run:
 # source ~/repos/dotfiles/aliases.zsh
